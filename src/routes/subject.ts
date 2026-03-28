@@ -4,7 +4,7 @@ import { departments, subjects } from "../db/schema";
 import { db } from "../db";
 const router = express.Router()
 
-
+//get all subject with search and filtering
 router.get('/', async (req, res) => {
     try {
         const { search, department, page = 1, limit = 10 } = req.query
@@ -35,7 +35,7 @@ router.get('/', async (req, res) => {
             )
         }
 
-        const whereClause = filterConditions.length>0?and(... filterConditions):undefined;
+        const whereClause = filterConditions.length>0 ? and(... filterConditions):undefined;
 
         const countResult = await db.select({count:sql<number>`count(*)`})
         .from(subjects)
