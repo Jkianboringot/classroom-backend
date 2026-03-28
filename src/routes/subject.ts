@@ -9,10 +9,10 @@ router.get('/', async (req, res) => {
     try {
         const { search, department, page = 1, limit = 10 } = req.query
 
-        const currentPage = Math.max(1, +page);
-        const limitPerPage = Math.max(1, +limit)
+        const currentPage = Math.max(1, parseInt(String(page), 10) || 1);
+        const limitPerPage = Math.min(Math.max(1, parseInt(String(limit), 10) || 10), 100);
 
-        const offset=(currentPage -1 ) * limitPerPage
+        const offset = (currentPage - 1) * limitPerPage
 
         const filterConditions = []
 
@@ -28,38 +28,44 @@ router.get('/', async (req, res) => {
 
 
         //if department exist, match by department
-        if (search) {
+        if (department) {
             //will do it like this `${search}%`, becuase i will index it later
             filterConditions.push(
-                    ilike(departments.name, `${search}%`),
-            )
+                ilike(departments.name, `${search}%`));
+
+            //     this is for sql-injection, but this is not the best its better to use something like prepare on sql
+            // also other framework has this on default, but you should learn and still do this, becuase you can learn monitorEventLoopDelay
+            // and become more aware of why is it important and how to spot this problem early, and solve it
+            const depPattern = `%${String(department).replace(/[%_]/g, `\\$&`)}%`;
+            filterConditions.push(ilike(departments.name, depPattern))
         }
 
-        const whereClause = filterConditions.length>0 ? and(... filterConditions):undefined;
+        const whereClause = filterConditions.length > 0 ? and(...filterConditions) : undefined;
 
-        const countResult = await db.select({count:sql<number>`count(*)`})
-        .from(subjects)
-        .leftJoin(departments,eq(subjects.departmentId,departments.id))
-        .where(whereClause)
+        const countResult = await db.select({ count: sql<number>`count(*)` })
+            .from(subjects)
+            .leftJoin(departments, eq(subjects.departmentId, departments.id))
+            .where(whereClause)
 
 
-        const totalCount = countResult[0]?.count??0
+        const totalCount = countResult[0]?.count ?? 0
 
-        const subjectsList=await db.select({...getTableColumns(subjects),
-            department:{...getTableColumns(departments)}
-        }).from(subjects).leftJoin(departments,eq(subjects.departmentId,departments.id))
-        .where(whereClause)
-        .orderBy(desc(subjects.createdAt))
-        .limit(limitPerPage)
-        .offset(offset)
+        const subjectsList = await db.select({
+            ...getTableColumns(subjects),
+            department: { ...getTableColumns(departments) }
+        }).from(subjects).leftJoin(departments, eq(subjects.departmentId, departments.id))
+            .where(whereClause)
+            .orderBy(desc(subjects.createdAt))
+            .limit(limitPerPage)
+            .offset(offset)
 
         res.status(200).json({
-            data:subjectsList,
-            pagination:{
-                page:currentPage,
-                limit:limitPerPage,
-                total:totalCount,
-                totalPages:Math.ceil(totalCount/limitPerPage)
+            data: subjectsList,
+            pagination: {
+                page: currentPage,
+                limit: limitPerPage,
+                total: totalCount,
+                totalPages: Math.ceil(totalCount / limitPerPage)
             }
         })
 
