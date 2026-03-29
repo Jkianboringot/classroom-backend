@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
         if (department) {
             //will do it like this `${search}%`, becuase i will index it later
             filterConditions.push(
-                ilike(departments.name, `${search}%`));
+                ilike(departments.name, `${department}%`));
 
             //     this is for sql-injection, but this is not the best its better to use something like prepare on sql
             // also other framework has this on default, but you should learn and still do this, becuase you can learn monitorEventLoopDelay
