@@ -1,17 +1,29 @@
 import express from "express";
-import {PORT} from '../config/env.js'
+import { subjects } from "./db/schema/app.js";
+import subjectsRouter from './routes/subject'
+import cors from 'cors'
+import { errorMonitor } from "node:events";
 
 
 const app = express();
 
+
 app.use(express.json())
-//ok so the parameter in this callback where req and res are suppose to be is order base, meaning 
-// you can name it anything you want, the first param will always be req once, and the second is the res once
-// i was about to ask ai it but i figure it out myself fuck, the more you know
+
+if(!process.env.FRONTEND_URL){throw new Error('Frontend_url is not set in .env file')}
+
+app.use(cors({
+  origin:process.env.FRONTEND_URL,
+  methods:['GET','POST','PUT','DELETE'],
+  credentials:true
+}))
+
+app.use('api/subjects',subjectsRouter)
+
 app.get('/',(fuck,shit)=>{
     shit.send('fuckyou bitch')
 })
 
-app.listen(PORT, () => {
+app.listen(process.env.PORT, () => {
   console.log(`Server running on port http://localhost:${PORT}`);
 });

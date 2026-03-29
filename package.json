@@ -5,20 +5,26 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch ./src/index.ts",
-    "build":"tsc",
-    "start":"node dist/server.js"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
     "dotenv": "^17.3.1",
+    "drizzle-orm": "^0.45.2",
     "express": "^5.2.1"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^25.5.0",
+    "drizzle-kit": "^0.31.10",
     "nodemon": "^3.1.14",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
