@@ -7,6 +7,14 @@ const router = express.Router()
 //get all subject with search and filtering
 router.get('/', async (req, res) => {
     try {
+
+        //this are the request query, meaning you can use what is in here to do
+            // -http://localhost:8000/api/subjects?department=Mathematics
+            // -http://localhost:8000/api/subjects?search=Mechanics
+        // so its pretty being able to control what you see using url qeury, and i believe this is faster 
+        //then livewire laravel becuase in livewire, you have to hit model and controller then get back to
+        //view, in here browser kinda do all that
+        // client-driven URL query search/filter vs server-driven Livewire-style search/filter
         const { search, department, page = 1, limit = 10 } = req.query
 
         const currentPage = Math.max(1, parseInt(String(page), 10) || 1);
@@ -32,8 +40,8 @@ router.get('/', async (req, res) => {
             //will do it like this `${search}%`, becuase i will index it later
                     //- code rabbit suggested removing this because const depPattern do it but that is just for escaping not filtering, i dot know
                         //-so i will not change that and keep it as is becuase i think its correct
-            filterConditions.push(
-                ilike(departments.name, `${department}%`));
+            // filterConditions.push(
+            //     ilike(departments.name, `${department}%`));
 
             //     this is for sql-injection, but this is not the best its better to use something like prepare on sql
             // also other framework has this on default, but you should learn and still do this, becuase you can learn monitorEventLoopDelay
