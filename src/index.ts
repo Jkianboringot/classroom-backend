@@ -4,6 +4,7 @@ import subjectsRouter from './routes/subject'
 import cors from 'cors'
 import { errorMonitor } from "node:events";
 
+const PORT = process.env.PORT || 3000; //propse by code rabbit
 
 const app = express();
 
@@ -18,12 +19,9 @@ app.use(cors({
   credentials:true
 }))
 
-app.use('api/subjects',subjectsRouter)
+app.use('/api/subjects',subjectsRouter)
 
-app.get('/',(fuck,shit)=>{
-    shit.send('fuckyou bitch')
-})
 
-app.listen(process.env.PORT, () => {
+app.listen(PORT, () => {
   console.log(`Server running on port http://localhost:${PORT}`);
 });
