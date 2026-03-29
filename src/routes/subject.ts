@@ -30,6 +30,8 @@ router.get('/', async (req, res) => {
         //if department exist, match by department
         if (department) {
             //will do it like this `${search}%`, becuase i will index it later
+                    //- code rabbit suggested removing this because const depPattern do it but that is just for escaping not filtering, i dot know
+                        //-so i will not change that and keep it as is becuase i think its correct
             filterConditions.push(
                 ilike(departments.name, `${department}%`));
 
@@ -48,7 +50,7 @@ router.get('/', async (req, res) => {
             .where(whereClause)
 
 
-        const totalCount = countResult[0]?.count ?? 0
+        const totalCount = Number(countResult[0]?.count ?? 0)
 
         const subjectsList = await db.select({
             ...getTableColumns(subjects),
