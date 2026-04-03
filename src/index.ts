@@ -3,7 +3,6 @@ import { subjects } from "./db/schema/app.js";
 import subjectsRouter from './routes/subject'
 import departmentsRouter from './routes/department'
 import cors from 'cors'
-import { errorMonitor } from "node:events";
 import securityMiddleware from "./middleware/security.js";
 const PORT = process.env.PORT || 3000; //propse by code rabbit
 import {auth} from './lib/auth'
@@ -22,12 +21,12 @@ app.use(cors({
   credentials:true
 }))
 
-app.all('/api/auth/*splat', toNodeHandler(auth));
 
 app.use(securityMiddleware)
 
 
 
+app.all('/api/auth/*splat', toNodeHandler(auth));
 
 
 
