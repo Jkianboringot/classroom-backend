@@ -48,7 +48,10 @@ const securityMiddleware = async (req: Request, res: Response, next: NextFunctio
 
         const decision = await client.protect(arcjetRequest)
 
+        //code rabbit suggested that i either make the message same as the one in switch case or include what is in the switch case
+        //but the problem with that is, this check is for everyone, in switch case it is for specific user, 
 
+        //ohh ok am dumn in switch is all about rate limit so i should just use what is the define message thier am stupid the more you know
         if (decision.isDenied() && decision.reason.isRateLimit()) {
             return res.status(429).json({
                 error: 'rate_limit_exceeded',
