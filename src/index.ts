@@ -1,6 +1,7 @@
 import express from "express";
 import { subjects } from "./db/schema/app.js";
 import subjectsRouter from './routes/subject'
+import departmentsRouter from './routes/department'
 import cors from 'cors'
 import { errorMonitor } from "node:events";
 
@@ -20,6 +21,9 @@ app.use(cors({
 }))
 
 app.use('/api/subjects',subjectsRouter)
+
+// remove later, this is just to show deparment in subjects listen, just a small exercise
+app.use('/api/departments',departmentsRouter)
 
 
 app.listen(PORT, () => {
