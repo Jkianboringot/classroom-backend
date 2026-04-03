@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
         })
 
     } catch (error) {
-        console.error(`Get /subjects error: ${error}`)
+        console.error(`Get deparments error: ${error}`)
         res.status(500).json({ error: 'Failed to get deparments' })
     }
 })

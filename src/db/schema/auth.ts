@@ -34,8 +34,12 @@ export const session = pgTable("session", {
 
 export const account = pgTable("account", {
     id: text("id").primaryKey(),
-    accountId: text("account_id").notNull(),
-    providerId: text("provider_id").notNull(),
+    accountId: text("account_id").notNull().unique(),
+    //vid probably dont have this
+    //this is why doing shit your self is a good things or making sure what ai give you fully know and udnerstand
+    // this was made with ai, but it fail to catch this, becuase account_id can have duplicated, thier is no constraint that saying 
+    // it can only be one
+    providerId: text("provider_id").notNull().unique(),
     userId: text("user_id").notNull().references(() => user.id, { onDelete: 'cascade' }),
     accessToken: text("access_token"),
     refreshToken: text("refresh_token"),
