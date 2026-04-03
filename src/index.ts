@@ -4,7 +4,7 @@ import subjectsRouter from './routes/subject'
 import departmentsRouter from './routes/department'
 import cors from 'cors'
 import { errorMonitor } from "node:events";
-
+import securityMiddleware from "./middleware/security.js";
 const PORT = process.env.PORT || 3000; //propse by code rabbit
 
 const app = express();
@@ -19,6 +19,22 @@ app.use(cors({
   methods:['GET','POST','PUT','DELETE'],
   credentials:true
 }))
+
+
+
+app.use(securityMiddleware)
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.use('/api/subjects',subjectsRouter)
 
