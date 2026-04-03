@@ -22,7 +22,6 @@ const PORT = process.env.PORT || 3000; //propse by code rabbit
 const app = express();
 
   
-app.use(express.json())
 
 if(!process.env.FRONTEND_URL){throw new Error('Frontend_url is not set in .env file')}
 
@@ -32,20 +31,11 @@ app.use(cors({
   credentials:true
 }))
 
-
-app.use(securityMiddleware)
-
-
-
 app.all('/api/auth/*splat', toNodeHandler(auth));
 
+app.use(express.json())
 
-
-
-
-
-
-
+app.use(securityMiddleware)
 
 
 app.use('/api/subjects',subjectsRouter)
