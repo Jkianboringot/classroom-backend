@@ -1,17 +1,27 @@
+import AgentAPI from "apminsight";
+AgentAPI.config()
+
+
 import express from "express";
-import { subjects } from "./db/schema/app.js";
-import subjectsRouter from './routes/subject'
-import departmentsRouter from './routes/department'
 import cors from 'cors'
+
+
+
+import subjectsRouter from './routes/subject.js'
+import departmentsRouter from './routes/department.js'
+
 import securityMiddleware from "./middleware/security.js";
-const PORT = process.env.PORT || 3000; //propse by code rabbit
-import {auth} from './lib/auth'
+
+//for some reason i did see this in backend was it suppose to be in frontend,
+import {auth} from './lib/auth.js'
 import {toNodeHandler} from 'better-auth/node'
+
+const PORT = process.env.PORT || 3000; //propse by code rabbit
+
 
 const app = express();
 
   
-app.use(express.json())
 
 if(!process.env.FRONTEND_URL){throw new Error('Frontend_url is not set in .env file')}
 
@@ -21,20 +31,11 @@ app.use(cors({
   credentials:true
 }))
 
-
-app.use(securityMiddleware)
-
-
-
 app.all('/api/auth/*splat', toNodeHandler(auth));
 
+app.use(express.json())
 
-
-
-
-
-
-
+app.use(securityMiddleware)
 
 
 app.use('/api/subjects',subjectsRouter)

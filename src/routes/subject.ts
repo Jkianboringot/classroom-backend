@@ -1,7 +1,7 @@
 import { and, desc, eq, getTableColumns, ilike, notIlike, or, sql } from "drizzle-orm";
 import express from "express"
-import { departments, subjects } from "../db/schema";
-import { db } from "../db";
+import { departments, subjects } from "../db/schema/index.js";
+import { db } from "../db/index.js";
 const router = express.Router()
 
 //get all subject with search and filtering
