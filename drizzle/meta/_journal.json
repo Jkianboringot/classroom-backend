@@ -8,6 +8,13 @@
       "when": 1774684944926,
       "tag": "0000_colorful_doomsday",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1775195354305,
+      "tag": "0001_cool_exodus",
+      "breakpoints": true
     }
   ]
 }
