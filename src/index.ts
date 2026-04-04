@@ -9,6 +9,9 @@ import cors from 'cors'
 
 import subjectsRouter from './routes/subject.js'
 import departmentsRouter from './routes/department.js'
+import usersRouter from './routes/users.js'
+import classesRouter from './routes/classes.js'
+
 
 import securityMiddleware from "./middleware/security.js";
 
@@ -35,13 +38,17 @@ app.all('/api/auth/*splat', toNodeHandler(auth));
 
 app.use(express.json())
 
-app.use(securityMiddleware)
+// app.use(securityMiddleware) // i will disable this for now, i will only enable it when
+// i found the reason it keep giving me bot detected and also i found what is the missing origin shit is
 
 
 app.use('/api/subjects',subjectsRouter)
 
 // remove later, this is just to show deparment in subjects listen, just a small exercise
 app.use('/api/departments',departmentsRouter)
+
+app.use('/api/users',usersRouter)
+app.use('/api/classes',classesRouter)
 
 
 app.listen(PORT, () => {
