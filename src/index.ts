@@ -37,8 +37,8 @@ app.use(cors({
 app.all('/api/auth/*splat', toNodeHandler(auth));
 
 app.use(express.json())
-
-// app.use(securityMiddleware) // i will disable this for now, i will only enable it when
+app.use(securityMiddleware)
+//  // i will disable this for now, i will only enable it when
 // i found the reason it keep giving me bot detected and also i found what is the missing origin shit is
 
 
