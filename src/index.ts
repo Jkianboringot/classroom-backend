@@ -29,10 +29,27 @@ const app = express();
 if(!process.env.FRONTEND_URL){throw new Error('Frontend_url is not set in .env file')}
 
 app.use(cors({
-  origin:process.env.FRONTEND_URL,
-  methods:['GET','POST','PUT','DELETE'],
-  credentials:true
-}))
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // allow non-browser requests (Postman, etc.)
+
+    const allowedOrigins = [
+      process.env.FRONTEND_URL,                                           // your main URL
+      /^https:\/\/classroom-admin-panel-.*\.vercel\.app$/,               // all preview URLs
+    ];
+
+    const isAllowed = allowedOrigins.some(o =>
+      o instanceof RegExp ? o.test(origin) : o === origin
+    );
+
+    if (isAllowed) {
+      callback(null, origin);
+    } else {
+      callback(new Error(`CORS: origin ${origin} not allowed`));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+}));
 
 app.all('/api/auth/*splat', toNodeHandler(auth));
 
