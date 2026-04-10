@@ -28,7 +28,7 @@ const app = express();
 
 if(!process.env.FRONTEND_URL){throw new Error('Frontend_url is not set in .env file')}
 
-app.use(cors({
+app.use(cors({ //this works for some reason, i guess it change
   origin: (origin, callback) => {
     if (!origin) return callback(null, true); // allow non-browser requests (Postman, etc.)
 
@@ -54,8 +54,9 @@ app.use(cors({
 app.all('/api/auth/*splat', toNodeHandler(auth));
 
 app.use(express.json())
-app.use(securityMiddleware)
 //  // i will disable this for now, i will only enable it when
+// app.use(securityMiddleware)
+
 // i found the reason it keep giving me bot detected and also i found what is the missing origin shit is
 
 
