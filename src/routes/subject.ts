@@ -1,6 +1,6 @@
 import { and, desc, eq, getTableColumns, ilike, notIlike, or, sql } from "drizzle-orm";
 import express from "express"
-import { departments, subjects } from "../db/schema/index.js";
+import { departments,subjects } from "../db/schema/index.js";
 import { db } from "../db/index.js";
 const router = express.Router()
 
@@ -84,6 +84,25 @@ router.get('/', async (req, res) => {
         res.status(500).json({ error: 'Failed to get subjects' })
     }
 })
+
+
+router.post('/', async (req, res) => {
+    try {
+        const [createSubject] = await db
+            .insert(subjects)
+            .values({...req.body})
+            .returning({ id: subjects.id });
+
+        if(!createSubject) throw Error;
+
+        res.status(201).json({ data: createSubject });
+    } catch (e) {
+        console.error(`POST /subjects error ${e}`);
+        res.status(500).json({ error: e})
+    }
+})
+
+
 
 
 export default router

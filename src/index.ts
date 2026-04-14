@@ -11,6 +11,7 @@ import subjectsRouter from './routes/subject.js'
 import departmentsRouter from './routes/department.js'
 import usersRouter from './routes/users.js'
 import classesRouter from './routes/classes.js'
+import enrollmentsRouter from './routes/enrollment.js'
 
 
 import securityMiddleware from "./middleware/security.js";
@@ -67,6 +68,7 @@ app.use('/api/departments',departmentsRouter)
 
 app.use('/api/users',usersRouter)
 app.use('/api/classes',classesRouter)
+app.use('/api/enrollments',enrollmentsRouter)
 
 
 app.listen(PORT, () => {

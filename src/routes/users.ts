@@ -1,7 +1,7 @@
 import express from "express";
-import {and, desc, eq, getTableColumns, ilike, or, sql} from "drizzle-orm";
+import { and, desc, eq, getTableColumns, ilike, or, sql } from "drizzle-orm";
 
-import {user} from "../db/schema/index.js";
+import { enrollments, user } from "../db/schema/index.js";
 import { db } from "../db/index.js";
 
 const router = express.Router();
@@ -37,7 +37,7 @@ router.get("/", async (req, res) => {
         const whereClause = filterConditions.length > 0 ? and(...filterConditions) : undefined;
 
         const countResult = await db
-            .select({ count: sql<number>`count(*)`})
+            .select({ count: sql<number>`count(*)` })
             .from(user)
             .where(whereClause);
 
@@ -68,4 +68,25 @@ router.get("/", async (req, res) => {
     }
 })
 
+
+
+
+router.post('/', async (req, res) => {
+    try {
+        const [createUser] = await db
+            .insert(enrollments)
+            .values({ ...req.body })
+            .returning({
+                studentId: enrollments.studentId,
+                classId: enrollments.classId,
+            });
+
+        if (!createUser) throw Error;
+            console.log(c)
+        res.status(201).json({ data: createUser });
+    } catch (e) {
+        console.error(`POST /enrollments error ${e}`);
+        res.status(500).json({ error: e })
+    }
+})
 export default router;

@@ -13,6 +13,7 @@ router.get('/', async (req, res) => {
     try {
 
         const departmentList = await db.select({
+            id:departments.id,
             name: departments.name
         }).from(departments)
 
@@ -27,6 +28,24 @@ router.get('/', async (req, res) => {
         res.status(500).json({ error: 'Failed to get deparments' })
     }
 })
+
+
+router.post('/', async (req, res) => {
+    try {
+        const [createDepartment] = await db
+            .insert(departments)
+            .values({...req.body})
+            .returning({ id: departments.id });
+
+        if(!createDepartment) throw Error;
+
+        res.status(201).json({ data: createDepartment });
+    } catch (e) {
+        console.error(`POST /departments error ${e}`);
+        res.status(500).json({ error: e})
+    }
+})
+
 
 
 export default router
