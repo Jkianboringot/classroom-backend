@@ -1,8 +1,8 @@
 import express from "express";
-import {and, desc, eq, getTableColumns, ilike, or, sql} from "drizzle-orm";
+import { and, desc, eq, getTableColumns, ilike, or, sql } from "drizzle-orm";
 
-import {db} from "../db/index.js";
-import {classes, departments, subjects} from '../db/schema/app.js'
+import { db } from "../db/index.js";
+import { classes, departments, enrollments, subjects } from '../db/schema/app.js'
 import { user } from '../db/schema/auth.js'
 
 const router = express.Router();
@@ -45,7 +45,7 @@ router.get("/", async (req, res) => {
         const whereClause = filterConditions.length > 0 ? and(...filterConditions) : undefined;
 
         const countResult = await db
-            .select({ count: sql<number>`count(*)`})
+            .select({ count: sql<number>`count(*)` })
             .from(classes)
             .leftJoin(subjects, eq(classes.subjectId, subjects.id))
             .leftJoin(user, eq(classes.teacherId, user.id))
@@ -87,7 +87,7 @@ router.get("/", async (req, res) => {
 router.get('/:id', async (req, res) => {
     const classId = Number(req.params.id);
 
-    if(!Number.isFinite(classId)) return res.status(400).json({ error: 'No Class found.' });
+    if (!Number.isFinite(classId)) return res.status(400).json({ error: 'No Class found.' });
 
     const [classDetails] = await db
         .select({
@@ -110,24 +110,56 @@ router.get('/:id', async (req, res) => {
         .leftJoin(departments, eq(subjects.departmentId, departments.id))
         .where(eq(classes.id, classId))
 
-    if(!classDetails) return res.status(404).json({ error: 'No Class found.' });
+    if (!classDetails) return res.status(404).json({ error: 'No Class found.' });
 
     res.status(200).json({ data: classDetails });
 })
+
+
+
+// Get class details with teacher, subject, and department
+router.get('/:id/users', async (req, res) => {
+    console.log('here')
+    // what we pretty much needs here is to get all user that is enrolled in this class
+
+    // here is what we do, class -> enrollment -> enrollment.classId = class.id -> get all user for that class
+
+    const classId = Number(req.params.id);
+
+    if (!Number.isFinite(classId)) return res.status(400).json({ error: 'No Class found.' });
+
+    const classDetails = await db
+        .select({
+            id: user.id,        // Need ID for the "View" button
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            image: user.image
+        })
+        .from(enrollments)  
+        .innerJoin(user, eq(enrollments.studentId, user.id))
+        .where(eq(enrollments.classId, classId));
+
+    console.log(classDetails)
+    if (!classDetails) return res.status(404).json({ error: 'No Class found.' });
+
+    res.status(200).json({ data: classDetails });
+})
+
 
 router.post('/', async (req, res) => {
     try {
         const [createdClass] = await db
             .insert(classes)
-            .values({...req.body, inviteCode: Math.random().toString(36).substring(2, 9), schedules: []})
+            .values({ ...req.body, inviteCode: Math.random().toString(36).substring(2, 9), schedules: [] })
             .returning({ id: classes.id });
 
-        if(!createdClass) throw Error;
+        if (!createdClass) throw Error;
 
         res.status(201).json({ data: createdClass });
     } catch (e) {
         console.error(`POST /classes error ${e}`);
-        res.status(500).json({ error: e})
+        res.status(500).json({ error: e })
     }
 })
 
