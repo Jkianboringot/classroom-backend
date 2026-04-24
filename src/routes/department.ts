@@ -4,8 +4,9 @@
 
 import { and, desc, eq, getTableColumns, ilike, name, notIlike, or, sql } from "drizzle-orm";
 import express from "express"
-import { classes, departments, subjects, user ,enrollments} from "../db/schema/index.js";
+import { classes, departments, subjects, user, enrollments } from "../db/schema/index.js";
 import { db } from "../db/index.js";
+import { only } from "node:test";
 const router = express.Router()
 
 //get all subject with search and filtering
@@ -32,11 +33,10 @@ router.get('/', async (req, res) => {
 
 router.get('/:id/subjects', async (req, res) => {
     const departmentId = Number(req.params.id);
-    console.log('subjects ')
 
     if (!Number.isFinite(departmentId)) return res.status(400).json({ error: 'No Class found.' });
 
-    const [departmentSubject] = await db
+    const departmentSubject = await db
         .select({
             id: subjects.id,
             name: subjects.name,
@@ -49,7 +49,6 @@ router.get('/:id/subjects', async (req, res) => {
         .where(eq(subjects.departmentId, departmentId))
 
 
-    console.log(departmentSubject)
     if (!departmentSubject) return res.status(404).json({ error: 'No Class found.' });
 
     res.status(200).json({ data: departmentSubject });
@@ -57,13 +56,14 @@ router.get('/:id/subjects', async (req, res) => {
 
 
 
+// all wrong it need to go througth department
+
 router.get('/:id/classes', async (req, res) => {
     const departmentId = Number(req.params.id);
-    console.log('classes ')
 
     if (!Number.isFinite(departmentId)) return res.status(400).json({ error: 'No Class found.' });
 
-    const [departmentClass] = await db
+    const departmentClass = await db
         .select({
             ...getTableColumns(classes),
             subject: { //it is done this way because of accessorKey, it pretty much allows you to get all data of subject by json, key, we just are just 
@@ -81,7 +81,6 @@ router.get('/:id/classes', async (req, res) => {
         .innerJoin(user, eq(classes.teacherId, user.id))
         .where(eq(subjects.departmentId, departmentId))
 
-    console.log(departmentClass)
 
     if (!departmentClass) return res.status(404).json({ error: 'No Class found.' });
 
@@ -93,11 +92,13 @@ router.get('/:id/classes', async (req, res) => {
 
 router.get('/:id/users', async (req, res) => {
     const departmentId = Number(req.params.id);
-    console.log('users ')
+    const query = req.query.role
+
+    console.log(query)
 
     if (!Number.isFinite(departmentId)) return res.status(400).json({ error: 'No Class found.' });
 
-    const [departmentUser] = await db
+    const departmentUser = await db
         .select({
             id: user.id,
             name: user.name,
@@ -106,10 +107,22 @@ router.get('/:id/users', async (req, res) => {
             image: user.image
 
         })
-        .from(user)
-        .innerJoin(classes, eq(user.id, classes.teacherId))
-        .innerJoin(subjects, eq(classes.subjectId, subjects.id))
-        .where(eq(subjects.departmentId, departmentId))
+        .from(subjects)
+        // the reason its givn back teacher is bcasue this is doing  join by teacher only,
+        // which is wrong we need it to return all user of that department class, for now just 
+        // return all user
+        .innerJoin(classes, eq(subjects.id, classes.subjectId))
+        .innerJoin(enrollments, eq(classes.id, enrollments.classId))
+        // ok i need to explain why this did not explain any issues shold what it give me is 
+        // all user that of student, only , wait this is correct because what we want 
+        // is studend in a specific class not all useer, i wass to fpocus on getting all 
+        // user taht i forgot that we whhere suppose to fine student of a specific class
+        .innerJoin(user, eq(enrollments.studentId, user.id))
+        .where(and(
+            eq(user.role, req.query.role as "student" | "teacher" | "admin"),
+            eq(subjects.departmentId, departmentId)
+        ))
+
 
     console.log(departmentUser)
     if (!departmentUser) return res.status(404).json({ error: 'No Class found.' });
@@ -121,7 +134,6 @@ router.get('/:id/users', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
     const departmentId = Number(req.params.id);
-    console.log('details')
     if (!Number.isFinite(departmentId)) {
         return res.status(400).json({ error: 'Invalid Department ID.' });
     }
@@ -160,7 +172,6 @@ router.get('/:id', async (req, res) => {
                 enrolledStudents: stats?.studentCount || 0,
             }
         };
-    console.log(response)
 
         res.status(200).json({ data: response });
 

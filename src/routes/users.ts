@@ -1,7 +1,7 @@
 import express from "express";
 import { and, desc, eq, getTableColumns, ilike, or, sql } from "drizzle-orm";
 
-import { enrollments, user } from "../db/schema/index.js";
+import { classes, departments, enrollments, subjects, user } from "../db/schema/index.js";
 import { db } from "../db/index.js";
 
 const router = express.Router();
@@ -70,6 +70,64 @@ router.get("/", async (req, res) => {
 
 
 
+router.get('/:id/subjects', async (req, res) => {
+    const userId = req.params.id;
+    if (!userId) return res.status(400).json({ error: 'No user found.' });
+    console.log(userId,'subject')
+
+    const subjectUser = await db
+        .select({
+            id: subjects.id,
+            name: subjects.name,
+            code: subjects.code,
+            description: subjects.description
+
+        })
+        .from(classes)
+        .innerJoin(subjects, eq(classes.subjectId, subjects.id))
+        .where(
+            eq(classes.teacherId, userId)
+        )
+
+    console.log(subjectUser)
+    if (!subjectUser) return res.status(404).json({ error: 'No Class found.' });
+
+    res.status(200).json({ data: subjectUser });
+})
+
+
+router.get('/:id/departments', async (req, res) => {
+    const userId = req.params.id;
+    if (!userId) return res.status(400).json({ error: 'No user found.' });
+    console.log(userId,'department')
+
+    const departmentUser = await db
+        .select({
+            id: departments.id,
+            name: departments.name,
+            code: departments.code,
+            description: departments.description
+        })
+        .from(classes)
+        .innerJoin(subjects, eq(classes.subjectId, subjects.id))
+        .innerJoin(departments, eq(subjects.departmentId, departments.id))
+        .where(
+            eq(classes.teacherId, userId)
+        )
+
+    console.log(departmentUser)
+    if (!departmentUser) return res.status(404).json({ error: 'No Class found.' });
+
+    res.status(200).json({ data: departmentUser });
+})
+
+router.get('/:id', async (req, res) => {
+  const userId = req.params.id;
+  const found = await db.select().from(user).where(eq(user.id, userId));
+  if (!found[0]) return res.status(404).json({ error: 'User not found' });
+  res.status(200).json({ data: found[0] });
+});
+
 
 router.post('/', async (req, res) => {
     try {
@@ -82,7 +140,6 @@ router.post('/', async (req, res) => {
             });
 
         if (!createUser) throw Error;
-            console.log(c)
         res.status(201).json({ data: createUser });
     } catch (e) {
         console.error(`POST /enrollments error ${e}`);
