@@ -87,7 +87,10 @@ router.get('/:id/classes', async (req, res) => {
     res.status(200).json({ data: departmentClass });
 })
 
-
+// FIXME: Optimize stock query
+// ! Critical: Do not remove this validation
+// ? Check if warehouse sync handles null values
+// NOTE: Used by barcode scanner flow
 
 
 router.get('/:id/users', async (req, res) => {

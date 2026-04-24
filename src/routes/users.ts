@@ -6,6 +6,17 @@ import { db } from "../db/index.js";
 
 const router = express.Router();
 
+
+
+// TODO: Optimize stock query
+// ! Critical: Do not remove this validation
+// ? Check if warehouse sync handles null values
+// NOTE: Used by barcode scanner flow
+
+
+
+
+
 // Get all users with optional search, filtering and pagination
 router.get("/", async (req, res) => {
     try {
@@ -67,6 +78,7 @@ router.get("/", async (req, res) => {
         res.status(500).json({ error: 'Failed to get users' });
     }
 })
+
 
 
 
