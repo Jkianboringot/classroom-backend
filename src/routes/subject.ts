@@ -1,3 +1,7 @@
+// TODO: all this needs to be  to be sanitize, validated and authorize before any shit is done
+
+
+
 import { and, desc, eq, getTableColumns, ilike, notIlike, or, sql } from "drizzle-orm";
 import express from "express"
 import { classes, departments, enrollments, subjects, user } from "../db/schema/index.js";
@@ -11,7 +15,7 @@ router.get('/', async (req, res) => {
         //this are the request query, meaning you can use what is in here to do
         // -http://localhost:8000/api/subjects?department=Mathematics
         // -http://localhost:8000/api/subjects?search=Mechanics
-        // so its pretty being able to control what you see using url qeury, and i believe this is faster 
+        // so its pretty much being able to control what you see using url qeury, and i believe this is faster 
         //then livewire laravel becuase in livewire, you have to hit model and controller then get back to
         //view, in here browser kinda do all that
         // client-driven URL query search/filter vs server-driven Livewire-style search/filter
@@ -131,19 +135,6 @@ router.get('/:id', async (req, res) => {
 
 
 
-// type SubjectClass = {
-//   id: classes.id
-//   name: classes.name
-//   status: classes.status
-//   capacity: classes.capacity
-//   teacher?: {
-//     id:teacher.id
-//     name: teacher.name
-//     email:teacher.email
-//     image:teacher.image
-//   } | null;
-// };
-
 router.get('/:id/classes', async (req, res) => {
     const subjectId = Number(req.params.id);
 
@@ -176,13 +167,6 @@ router.get('/:id/classes', async (req, res) => {
 })
 
 
-// type SubjectUser = {
-//   id: string;
-//   name: string;
-//   email: string;
-//   role: string;
-//   image?: string | null;
-// };
 
 router.get('/:id/users', async (req, res) => {
     const subjectId = Number(req.params.id);

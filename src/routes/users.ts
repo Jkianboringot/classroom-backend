@@ -1,9 +1,14 @@
+// TODO: all this needs to be  to be sanitize, validated and authorize before any shit is done
+
+
+// PERFORMANCE: fix 
 import express from "express";
 import { and, desc, eq, getTableColumns, ilike, or, sql } from "drizzle-orm";
 
 import { classes, departments, enrollments, subjects, user } from "../db/schema/index.js";
 import { db } from "../db/index.js";
-
+// add this at the top of users.ts
+import { auth } from "../lib/auth"; // wherever you initialized Better Auth
 const router = express.Router();
 
 
@@ -79,8 +84,27 @@ router.get("/", async (req, res) => {
     }
 })
 
+router.get('/me', async (req, res) => {
+  try {
+    // Better Auth stores session in cookies, use their helper
+    const session = await auth.api.getSession({
+      headers: req.headers as any,
+    });
 
+    if (!session?.user) return res.status(401).json({ error: "Not authsdeeenticated" });
 
+    const found = await db
+      .select()
+      .from(user)
+      .where(eq(user.id, session.user.id));
+
+    if (!found[0]) return res.status(404).json({ error: "User not found" });
+
+    res.status(200).json({ data: found[0] });
+  } catch (e) {
+    res.status(401).json({ error: "Not authenticated" });
+  }
+});
 
 router.get('/:id/subjects', async (req, res) => {
     const userId = req.params.id;

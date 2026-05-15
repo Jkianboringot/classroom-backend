@@ -1,6 +1,7 @@
 // ps. this was made because i want to show the department in subject listen, this is not the best 
 // way but i choose this because its cleaner and easy to remove later on
 // just for exercise,
+// TODO: all this needs to be  to be sanitize, validated and authorize before any shit is done
 
 import { and, desc, eq, getTableColumns, ilike, name, notIlike, or, sql } from "drizzle-orm";
 import express from "express"
@@ -15,7 +16,9 @@ router.get('/', async (req, res) => {
 
         const departmentList = await db.select({
             id: departments.id,
-            name: departments.name
+            name: departments.name,
+            code: departments.code,
+            description: departments.description
         }).from(departments)
 
 

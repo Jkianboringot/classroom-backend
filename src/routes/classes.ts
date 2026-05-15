@@ -1,3 +1,7 @@
+// TODO: all this needs to be  to be sanitize, validated and authorize before any shit is done
+
+
+
 import express from "express";
 import { and, desc, eq, getTableColumns, ilike, or, sql } from "drizzle-orm";
 

@@ -1,3 +1,7 @@
+// TODO: all this needs to be  to be sanitize, validated and authorize before any shit is done
+
+
+
 import express from "express";
 import { and, desc, eq, getTableColumns, ilike, or, sql } from "drizzle-orm";
 
@@ -30,12 +34,6 @@ router.post('/', async (req, res) => {
             ))
 
         console.log(userExist) //this is always empty no matter waht
-
-
-
-
-
-
 
 
         //ok in the future i will 
